@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -29,17 +30,14 @@ public class TimeTrackerController {
 	public ResponseEntity<List<TimeRecord>> getRecords(@RequestParam(required = false) Optional<String> email,
 			@RequestParam(required = false) Optional<Long> offset,
 			@RequestParam(required = false) Optional<Long> length) {
-		System.out.println("getRecords called");
 		return ResponseEntity.ok(timeTrackerProxy.getRecords(email, offset, length));
 	}
 
 	@CrossOrigin
-	@PostMapping(value = "/records")
-	public ResponseEntity<Void> addRecord(@RequestParam Optional<TimeRecord> timeRecord) {
-		System.out.println(timeRecord);
-		if (timeRecord.isPresent()) {
-			System.out.println("addRecord called");
-			timeTrackerProxy.addRecord(timeRecord.get());
+	@PostMapping(value = "/records", consumes = { "multipart/form-data" })
+	public ResponseEntity<Void> addRecord(@ModelAttribute TimeRecord timeRecord) {
+		if (timeRecord != null) {
+			timeTrackerProxy.addRecord(timeRecord);
 			return ResponseEntity.ok().build();
 		}
 		return ResponseEntity.badRequest().build();

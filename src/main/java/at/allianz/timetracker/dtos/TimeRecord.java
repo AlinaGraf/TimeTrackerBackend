@@ -1,14 +1,12 @@
 package at.allianz.timetracker.dtos;
 
-import java.util.Date;
-
 /**
  * REST DTO TimeRecord Object
  */
 public class TimeRecord {
 	private String email;
-    private Date start;
-    private Date end;
+    private String start;
+    private String end;
     
     
     public String getEmail() {
@@ -17,16 +15,16 @@ public class TimeRecord {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	public Date getStart() {
+	public String getStart() {
 		return start;
 	}
-	public void setStart(Date timeFrom) {
-		this.start = timeFrom;
+	public void setStart(String start) {
+		this.start = start;
 	}
-	public Date getEnd() {
+	public String getEnd() {
 		return end;
 	}
-	public void setEnd(Date end) {
+	public void setEnd(String end) {
 		this.end = end;
 	}
 

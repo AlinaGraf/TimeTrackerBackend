@@ -1,7 +1,5 @@
 package at.allianz.timetracker.proxies;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -23,10 +21,6 @@ import at.allianz.timetracker.dtos.TimeRecord;
 @Component
 public class TimeTrackerProxy {
 
-	private final static String DATE_TIME_PATTERN = "dd.MM.yyyy HH:mm";
-
-	private final DateFormat dateFormat = new SimpleDateFormat(DATE_TIME_PATTERN);
-
 	private String timeRecordsResourceUrl = System.getenv("TIME_TRACKER_URL") != null
 			? System.getenv("TIME_TRACKER_URL")
 			: "http://localhost:8080/records";
@@ -42,7 +36,6 @@ public class TimeTrackerProxy {
 	 */
 	public List<TimeRecord> getRecords(Optional<String> email, Optional<Long> offset, Optional<Long> length) {
 		TimeRecord[] records = (restTemplate.getForObject(getGetUrlParams(email, offset, length), TimeRecord[].class));
-		System.out.println(records);
 		return cleanRecords(records);
 	}
 
@@ -55,6 +48,11 @@ public class TimeTrackerProxy {
 		restTemplate.postForEntity(timeRecordsResourceUrl, getRequest(timeRecord), TimeRecord.class);
 	}
 
+	/**
+	 * Removes any null records from the result
+	 * @param records a list of {@link TimeRecord}s
+	 * @return a list of records with the null entries omitted
+	 */
 	private List<TimeRecord> cleanRecords(TimeRecord[] records) {
 		if (null == records) {
 			return Collections.emptyList();
@@ -84,9 +82,7 @@ public class TimeTrackerProxy {
 		if (length.isPresent()) {
 			uriBuilder.queryParam("length", length.get());
 		}
-		String urlTemplate = uriBuilder.encode().toUriString();
-		System.out.println(urlTemplate);
-		return urlTemplate;
+		return uriBuilder.encode().toUriString();
 	}
 
 	/**
@@ -119,8 +115,8 @@ public class TimeTrackerProxy {
 	private MultiValueMap<String, String> getPostParams(TimeRecord timeRecord) {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("email", timeRecord.getEmail());
-		params.add("start", dateFormat.format(timeRecord.getStart()));
-		params.add("end", dateFormat.format(timeRecord.getEnd()));
+		params.add("start", timeRecord.getStart());
+		params.add("end", timeRecord.getEnd());
 		return params;
 	}
 
